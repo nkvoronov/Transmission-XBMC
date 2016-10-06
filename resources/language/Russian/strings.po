@@ -81,6 +81,10 @@ msgctxt "#32111"
 msgid "Status"
 msgstr "Статус"
 
+msgctxt "#32112"
+msgid "Torrent Details"
+msgstr "Детальная информация о торренте"
+
 msgctxt "#32200"
 msgid "Browse for torrent file"
 msgstr "Выбрать торрент-файл"
