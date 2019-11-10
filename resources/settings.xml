@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
-	<category label="32000">
+	<category label="31000">
 		<setting type="lsep" label="32800" />
 		<setting id="rpc_host" type="text" label="32801" default="localhost" />
 		<setting id="rpc_port" type="number" label="32802" default="9091" />
