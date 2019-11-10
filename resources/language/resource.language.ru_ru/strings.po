@@ -25,6 +25,10 @@ msgctxt "Addon Description"
 msgid "Currently, Transmission-XBMC supports viewing, adding, removing, starting and stopping torrents. More advanced features may be added in future releases."
 msgstr "В настоящее время, Transmission-XBMC поддерживает просмотр, добавление, удаление, запуск и остановка торрентов. Более продвинутые функции могут быть добавлены в будущих версиях."
 
+msgctxt "#31000"
+msgid "General"
+msgstr "Общие"
+
 msgctxt "#32000"
 msgid "Transmission"
 msgstr "Transmission"
