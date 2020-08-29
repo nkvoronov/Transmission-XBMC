@@ -158,12 +158,12 @@ class TransmissionGUI(xbmcgui.WindowXMLDialog):
                                                common.get_localized_string(32000),
                                                'files',
                                                '.torrent')
-                try:
+            try:
                 f = open(filename, 'rb')
                 data = base64.b64encode(f.read()).decode('ascii')
-                    self.transmission.add(data)
-                except:
-                    pass
+                self.transmission.add(data)
+            except:
+                pass
 
         if (controlID == 112):
             # Remove selected torrent
