@@ -25,10 +25,6 @@ msgctxt "Addon Description"
 msgid "Currently, Transmission-XBMC supports viewing, adding, removing, starting and stopping torrents. More advanced features may be added in future releases."
 msgstr ""
 
-msgctxt "#31000"
-msgid "General"
-msgstr ""
-
 msgctxt "#32000"
 msgid "Transmission"
 msgstr ""
@@ -94,59 +90,11 @@ msgctxt "#32112"
 msgid "Torrent Details"
 msgstr ""
 
-#Adding / Search
+# Adding
 #empty strings from id 32112 to 32199
 
 msgctxt "#32200"
 msgid "Browse for torrent file"
-msgstr ""
-
-#empty string with id 32201
-
-msgctxt "#32202"
-msgid "Search ThePirateBay"
-msgstr ""
-
-msgctxt "#32203"
-msgid "Search Mininova.org"
-msgstr ""
-
-msgctxt "#32204"
-msgid "Search KickassTorrents"
-msgstr ""
-
-msgctxt "#32205"
-msgid "Search 1337x"
-msgstr ""
-
-msgctxt "#32206"
-msgid "Search YTS"
-msgstr ""
-
-msgctxt "#32207"
-msgid "Search LimeTorrents"
-msgstr ""
-
-msgctxt "#32208"
-msgid "Search EZTV"
-msgstr ""
-
-#empty strings from id 32209 to 32289
-
-msgctxt "#32290"
-msgid "Searching..."
-msgstr ""
-
-msgctxt "#32291"
-msgid "No results found"
-msgstr ""
-
-msgctxt "#32292"
-msgid "Could not connect to search site"
-msgstr ""
-
-msgctxt "#32293"
-msgid "Could not download torrent data"
 msgstr ""
 
 #Status
@@ -166,7 +114,17 @@ msgid "stopped"
 msgstr ""
 
 #Settings
-#empty strings from id 32303 to 32799
+# empty strings from id 32303 to 32699
+
+msgctxt "#32700"
+msgid "General"
+msgstr ""
+
+msgctxt "#32701"
+msgid "General settings for Transmission daemon"
+msgstr ""
+
+# empty strings from id 32702 to 32799
 
 msgctxt "#32800"
 msgid "RPC Settings"

@@ -4,8 +4,8 @@
 
 import socket, datetime, logging
 from collections import namedtuple
-import transmissionrpc.constants as constants
-from transmissionrpc.constants import LOGGER
+import resources.lib.transmissionrpc.constants as constants
+from resources.lib.transmissionrpc.constants import LOGGER
 
 from six import string_types, iteritems
 

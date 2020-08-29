@@ -1,18 +1,14 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2010 Correl J. Roush
 
+from kodi_six import xbmc, xbmcgui
+from resources.lib import common
+from resources.lib import transmissionrpc
+from six import iteritems
+
 import sys
 import base64
 import threading
-import xbmc
-import xbmcgui
-from basictypes.bytes import Bytes
-import transmissionrpc
-import search
-import common
-
-_ = sys.modules[ "__main__" ].__language__
-__settings__ = sys.modules[ "__main__" ].__settings__
 
 KEY_BUTTON_BACK = 275
 KEY_KEYBOARD_ESC = 61467
@@ -27,43 +23,92 @@ STATUS_ICONS = {'stopped': 'pause.png',
                 'seeding': 'ok.png',
                 'downloading': 'down.png'}
 
+def formatBytes(value, multiplier=None, asBits=False ):
+    """Special data-type for byte values"""
+    KILOBYTES = 1024.0
+    MEGABYTES = KILOBYTES*1024
+    GIGABYTES = MEGABYTES*1024
+    TERABYTES = GIGABYTES*1024
+
+    displayNames = [
+        (TERABYTES, 'TB'),
+        (GIGABYTES, 'GB'),
+        (MEGABYTES, 'MB'),
+        (KILOBYTES, 'KB'),
+        (0, 'B'),
+    ]
+
+    """Format as a string which is back-coercable
+
+    multiplier -- pass in the appropriate multiplier for
+        the value (i.e. request 'KB' to get back as kilobytes,
+        default (None) indicates that the nearest should
+        be used
+    asBits -- if True, format a Byte value as bits, suitable
+        for display in a "bandwidth" setting, as distinct
+        from a simple measure of bytes.
+    """
+    if value < 0:
+        value = abs(value)
+        neg = '-'
+    else:
+        neg = ""
+    if asBits:
+        value = value * 8
+    for threshold, name in displayNames:
+        if value >= threshold:
+            if threshold:
+                value = value/threshold
+                value = '%3.1f'%(value,)
+            if asBits:
+                name = name[:-1] + name[-1].lower()
+            return '%s%s %s'%( neg, value, name)
+    raise RuntimeError( """A value %r both > 0 and < 0 was encountered?"""%(value,))
+
 class TransmissionGUI(xbmcgui.WindowXMLDialog):
     def __init__(self, strXMLname, strFallbackPath, strDefaultName, bforeFallback=0):
         self.list = {}
         self.torrents = {}
         self.timer = None
     def set_settings(self, params):
-        __settings__.setSetting('rpc_host', params['address'])
-        __settings__.setSetting('rpc_port', params['port'])
-        __settings__.setSetting('rpc_user', params['user'])
-        __settings__.setSetting('rpc_password', params['password'])
+        common.set_setting('rpc_host', params['address'])
+        common.set_setting('rpc_port', params['port'])
+        common.set_setting('rpc_user', params['user'])
+        common.set_setting('rpc_password', params['password'])
     def onInit(self):
         p = xbmcgui.DialogProgress()
-        p.create(_(32000), _(32001)) # 'Transmission', 'Connecting to Transmission'
+        p.create(common.get_localized_string(32000), # 'Transmission'
+                 common.get_localized_string(32001)) # 'Connecting to Transmission'
         try:
             self.transmission = common.get_rpc_client()
         except:
             p.close()
             self.close()
             (type, e, traceback) = sys.exc_info()
-            message = _(32900) # Unexpected error
+            message = common.get_localized_string(32900) # Unexpected error
             if type is transmissionrpc.TransmissionError:
                 if e.original:
                     if e.original.code is 401:
-                        message = _(32902) # Invalid auth
+                        message = common.get_localized_string(32902) # Invalid auth
                     else:
-                        message = _(32901) # Unable to connect
-                if xbmcgui.Dialog().yesno(_(32002), message, _(32003)):
-                    __settings__.openSettings()
+                        message = common.get_localized_string(32901) # Unable to connect
+                if xbmcgui.Dialog().yesno(common.get_localized_string(32002),
+                                          message +
+                                          '\n' +
+                                          common.get_localized_string(32003)):
+                    common.open_settings()
             elif type is ValueError:
                 # In python 2.4, urllib2.HTTPDigestAuthHandler will barf up a lung
                 # if auth fails and the server wants non-digest authentication
-                message = _(32902) # Invalid auth
-                if xbmcgui.Dialog().yesno(_(32002), message, _(32003)):
-                    __settings__.openSettings()
+                message = common.get_localized_string(32902) # Invalid auth
+                if xbmcgui.Dialog().yesno(common.get_localized_string(32002),
+                                          message +
+                                          '\n' +
+                                          common.get_localized_string(32003)):
+                    common.open_settings()
             else:
-                message = _(32900) # Unexpected error
-                xbmcgui.Dialog().ok(_(32002), message)
+                message = common.get_localized_string(32900) # Unexpected error
+                xbmcgui.Dialog().ok(common.get_localized_string(32002), message)
             return False
         self.updateTorrents()
         p.close()
@@ -72,10 +117,10 @@ class TransmissionGUI(xbmcgui.WindowXMLDialog):
     def updateTorrents(self):
         list = self.getControl(120)
         self.torrents = self.transmission.info()
-        for i, torrent in self.torrents.iteritems():
+        for i, torrent in iteritems(self.torrents):
             statusline = "[%(status)s] %(down)s down (%(pct).2f%%), %(up)s up (Ratio: %(ratio).2f)" % \
-                {'down': Bytes.format(torrent.downloadedEver), 'pct': torrent.progress, \
-                'up': Bytes.format(torrent.uploadedEver), 'ratio': torrent.ratio, \
+                {'down': formatBytes(torrent.downloadedEver), 'pct': torrent.progress, \
+                'up': formatBytes(torrent.uploadedEver), 'ratio': torrent.ratio, \
                 'status': torrent.status}
             if i not in self.list:
                 # Create a new list item
@@ -97,7 +142,7 @@ class TransmissionGUI(xbmcgui.WindowXMLDialog):
             for id in removed:
                 del self.list[id]
             list.reset()
-            for id, item in self.list.iteritems():
+            for id, item in iteritems(self.list):
                 list.addItem(item)
         list.setEnabled(bool(self.torrents))
 
@@ -109,55 +154,23 @@ class TransmissionGUI(xbmcgui.WindowXMLDialog):
         list = self.getControl(120)
         if (controlID == 111):
             # Add torrent
-            engines = [
-                (_(32200), None),
-                (_(32202), search.TPB),
-                (_(32203), search.Mininova),
-                (_(32204), search.Kickass),
-            ]
-            selected = xbmcgui.Dialog().select(_(32000), [i[0] for i in engines])
-            if selected < 0:
-                return
-            engine = engines[selected][1]
-            if not engine:
-                filename = xbmcgui.Dialog().browse(1, _(32000), 'files', '.torrent')
+            filename = xbmcgui.Dialog().browse(1,
+                                               common.get_localized_string(32000),
+                                               'files',
+                                               '.torrent')
                 try:
-                    f = open(filename, 'r')
-                    data = base64.b64encode(f.read())
+                f = open(filename, 'rb')
+                data = base64.b64encode(f.read()).decode('ascii')
                     self.transmission.add(data)
                 except:
                     pass
-            else:
-                kb = xbmc.Keyboard('', engines[selected][0])
-                kb.doModal()
-                if not kb.isConfirmed():
-                    return
-                terms = kb.getText()
-                p = xbmcgui.DialogProgress()
-                p.create(_(32000), _(32290))
-                try:
-                    results = engine().search(terms)
-                except:
-                    p.close()
-                    xbmcgui.Dialog().ok(_(32000), _(32292))
-                    return
-                p.close()
-                if not results:
-                    xbmcgui.Dialog().ok(_(32000), _(32291))
-                    return
-                selected = xbmcgui.Dialog().select(_(32000), ['[S:%d L:%d] %s' % (t['seeds'], t['leechers'], t['name']) for t in results])
-                if selected < 0:
-                    return
-                try:
-                    self.transmission.add_torrent(results[selected]['url'])
-                except:
-                    xbmcgui.Dialog().ok(_(32000), _(32293))
-                    return
+
         if (controlID == 112):
             # Remove selected torrent
             item = list.getSelectedItem()
-            if item and xbmcgui.Dialog().yesno(_(32000), 'Remove \'%s\'?' % self.torrents[int(item.getProperty('TorrentID'))].name):
-                remove_data = xbmcgui.Dialog().yesno(_(32000), 'Remove data as well?')
+            if item and xbmcgui.Dialog().yesno(common.get_localized_string(32000),
+                                               'Remove \'%s\'?' % self.torrents[int(item.getProperty('TorrentID'))].name):
+                remove_data = xbmcgui.Dialog().yesno(common.get_localized_string(32000), 'Remove data as well?')
                 self.transmission.remove(int(item.getProperty('TorrentID')), remove_data)
         if (controlID == 113):
             # Stop selected torrent
@@ -181,27 +194,27 @@ class TransmissionGUI(xbmcgui.WindowXMLDialog):
         if (controlID == 118):
             # Settings button
             prev_settings = common.get_settings()
-            __settings__.openSettings()
+            common.open_settings()
             p = xbmcgui.DialogProgress()
-            p.create(_(32000), _(32001)) # 'Transmission', 'Connecting to Transmission'
+            p.create(common.get_localized_string(32000), common.get_localized_string(32001)) # 'Transmission', 'Connecting to Transmission'
             try:
                 self.transmission = common.get_rpc_client()
                 self.updateTorrents()
                 p.close()
             except:
                 p.close()
-                xbmcgui.Dialog().ok(_(32002), _(32901))
+                xbmcgui.Dialog().ok(common.get_localized_string(32002), common.get_localized_string(32901))
                 # restore settings
                 self.set_settings(prev_settings)
                 try:
                     self.transmission = common.get_rpc_client()
                 except err:
-                    xbmcgui.Dialog().ok(_(32002), _(32901))
+                    xbmcgui.Dialog().ok(common.get_localized_string(32002), common.get_localized_string(32901))
                     self.close()
         if (controlID == 120):
             # A torrent was chosen, show details
             item = list.getSelectedItem()
-            w = TorrentInfoGUI("script-Transmission-details.xml", __settings__.getAddonInfo('path') ,"Default")
+            w = TorrentInfoGUI("script-Transmission-details.xml", common.get_addon_info('path') ,"Default")
             w.setTorrent(self.transmission, int(item.getProperty('TorrentID')))
             w.doModal()
             del w
@@ -239,8 +252,8 @@ class TorrentInfoGUI(xbmcgui.WindowXMLDialog):
         files = self.transmission.get_files(self.torrent_id)[self.torrent_id]
 
         statusline = "[%(status)s] %(down)s down, %(up)s up (Ratio: %(ratio).2f)" % \
-            {'down': Bytes.format(torrent.downloadedEver), 'pct': torrent.progress, \
-            'up': Bytes.format(torrent.uploadedEver), 'ratio': torrent.ratio, \
+            {'down': formatBytes(torrent.downloadedEver), 'pct': torrent.progress, \
+            'up': formatBytes(torrent.uploadedEver), 'ratio': torrent.ratio, \
             'status': torrent.status}
         if torrent.status is 'downloading':
             statusline += " ETA: %(eta)s" % \
@@ -251,7 +264,7 @@ class TorrentInfoGUI(xbmcgui.WindowXMLDialog):
         labelProgress.setLabel('%3d%%' % (torrent.progress))
         pbar.setPercent(torrent.progress)
 
-        for i, file in files.iteritems():
+        for i, file in iteritems(files):
             if i not in self.list:
                 # Create a new list item
                 l = xbmcgui.ListItem(label=file['name'])

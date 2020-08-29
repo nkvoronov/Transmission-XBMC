@@ -6,12 +6,12 @@ import re, time, operator, warnings, os
 import base64
 import json
 
-from transmissionrpc.constants import DEFAULT_PORT, DEFAULT_TIMEOUT
-from transmissionrpc.error import TransmissionError, HTTPHandlerError
-from transmissionrpc.utils import LOGGER, get_arguments, make_rpc_name, argument_value_convert, rpc_bool
-from transmissionrpc.httphandler import DefaultHTTPHandler
-from transmissionrpc.torrent import Torrent
-from transmissionrpc.session import Session
+from resources.lib.transmissionrpc.constants import DEFAULT_PORT, DEFAULT_TIMEOUT
+from resources.lib.transmissionrpc.error import TransmissionError, HTTPHandlerError
+from resources.lib.transmissionrpc.utils import LOGGER, get_arguments, make_rpc_name, argument_value_convert, rpc_bool
+from resources.lib.transmissionrpc.httphandler import DefaultHTTPHandler
+from resources.lib.transmissionrpc.torrent import Torrent
+from resources.lib.transmissionrpc.session import Session
 from gzip import GzipFile
 from io import BytesIO
 
