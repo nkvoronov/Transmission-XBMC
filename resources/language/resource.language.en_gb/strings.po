@@ -41,8 +41,16 @@ msgctxt "#32003"
 msgid "Open settings dialog?"
 msgstr ""
 
-#Buttons
-#empty strings from id 32004 to 32100
+msgctxt "#32004"
+msgid "Remove '%s'?"
+msgstr ""
+
+msgctxt "#32005"
+msgid "Remove data as well?"
+msgstr ""
+
+# Buttons
+# empty strings from id 32004 to 32100
 
 msgctxt "#32101"
 msgid "Add"
@@ -76,7 +84,7 @@ msgctxt "#32108"
 msgid "Settings"
 msgstr ""
 
-#empty string with id 32109
+# empty string with id 32109
 
 msgctxt "#32110"
 msgid "Name"
@@ -90,16 +98,20 @@ msgctxt "#32112"
 msgid "Torrent Details"
 msgstr ""
 
+msgctxt "#32113"
+msgid "[%(status)s] %(down)s down (%(pct).2f%%), %(up)s up (Ratio: %(ratio).2f)"
+msgstr ""
+
 # Adding
-#empty strings from id 32112 to 32199
+# empty strings from id 32112 to 32199
 
 msgctxt "#32200"
 msgid "Browse for torrent file"
 msgstr ""
 
-#Status
-#Short torrent status
-#empty strings from id 32294 to 32299
+# Status
+# Short torrent status
+# empty strings from id 32294 to 32299
 
 msgctxt "#32300"
 msgid "working"
@@ -113,7 +125,7 @@ msgctxt "#32302"
 msgid "stopped"
 msgstr ""
 
-#Settings
+# Settings
 # empty strings from id 32303 to 32699
 
 msgctxt "#32700"
@@ -150,8 +162,8 @@ msgctxt "#32805"
 msgid "Stop all torrents on video playback"
 msgstr ""
 
-#Errors
-#empty strings from id 32806 to 32899
+# Errors
+# empty strings from id 32806 to 32899
 
 msgctxt "#32900"
 msgid "An unexpected error occurred"
